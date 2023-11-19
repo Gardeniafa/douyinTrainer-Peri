@@ -1,0 +1,65 @@
+application:
+  token: 'app id'
+  secret: 'app secret'
+
+settings:
+  global_config:
+    size:
+      width:
+        min: 100
+      height:
+        min: 100
+    beauty:
+      good: 30
+      greet: 39
+      excellent: 50
+      amazing: 60
+    cut:
+      from:
+        x: 0
+        y: 290
+      to:
+        x: 915
+        y: 1910
+
+  age_range:
+    lovely_daughter:
+      age:
+        min: 5
+        max: 13
+    young_beauty:
+      age:
+        min: 16
+        max: 30
+
+device_manipulate:
+  click:
+    like:
+      x: 800
+      y: 1269
+    follow:
+      high:
+        x: 988
+        y: 1193
+      low:
+        x: 988
+        y: 1073
+    share:
+      btn:
+        x: 993
+        y: 1860
+      friend:
+        x: 316
+        y: 1806
+      ensure:
+        x: 689
+        y: 2301
+  swipe:
+    next:
+      from:
+        x: 733
+        y: 1813
+      to:
+        x: 906
+        y: 1416
+      time: 100
