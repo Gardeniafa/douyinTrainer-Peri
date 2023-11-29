@@ -15,11 +15,14 @@ SIZE_more_small = 2.0
 
 
 @decorator
-def get_dou_yin_img(index, path, config: dict):
+def get_dou_yin_img(index, path,):
     # 截图
     os.system("adb shell /system/bin/screencap -p /sdcard/screenshot.jpg")
     os.system(f"adb pull /sdcard/screenshot.jpg {path}/face-{index}.jpg")
     os.system("adb shell rm /sdcard/screenshot.jpg")
+
+
+def precaution_upload_to_api(index, path, config: dict):
     # cut picture
     utils.crop_image(f"{path}/face-{index}.jpg", (config['from']['x'], config['from']['y']),
                      (config['to']['x'], config['to']['y']), out=f"{path}/face-{index}_cut.jpg")

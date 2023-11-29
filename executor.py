@@ -2,6 +2,7 @@ import time
 import utils
 import os
 import math
+import random
 
 
 def exe(face_arg: dict or None, config, index, path):
@@ -16,42 +17,46 @@ def exe(face_arg: dict or None, config, index, path):
         # name = layout.find_element_str_by_id('title')
         print('face arg:', face_arg)
         f.write(f'      | {face_arg}\n')
-        normal_video = is_normal_video(index, path)
+        # normal_video = is_normal_video(index, path)
         can_follow = can_follow_now(index, path)
         if can_follow:
             f.write(f'      | follow btn hit at image follow-{can_follow["hit-number"]}.jpg\n')
-            print('follow: ', can_follow)
+            print(f'follow btn hit at image follow-{can_follow["hit-number"]}.jpg')
+        else:
+            f.write(f'      | no follow btn hit\n')
+            print('no follow btn hit')
         is_ad = fuck_ad(index, path)
         print(f'have ad: {"No" if not is_ad else is_ad}')
-        f.write(f'      | have ad: {is_ad if not is_ad else is_ad}\n')
-        print('normal video: ', normal_video, ', can follow: ', can_follow)
-        f.write(f"      | normal video: {normal_video}\n")
+        f.write(f'      | have ad: { "Not" if not is_ad else is_ad}\n')
+        # print('normal video: ', normal_video, ', can follow: ', can_follow)
+        # f.write(f"      | normal video: {normal_video}\n")
         f.write(f"      | can follow: {can_follow}\n")
         score = face_arg['score']
         # if score >= global_config['beauty']['amazing']:
         #     if can_follow:
         #         follow(manipulate_config)
-        if not normal_video:
-            f.write(f'      - not manipulate...\n')
-            face_arg = None
-            print('不合适操作，下一个')
+
+        # if not normal_video:
+        #     f.write(f'      - not manipulate...\n')
+        #     face_arg = None
+        #     print('不合适操作，下一个')
+        # else:
+        #     print(f"id：{name}")
+        if not is_ad:
+            f.write(f'      | page content: {is_ad}\n')
+            if score >= global_config['beauty']['excellent']:
+                if can_follow:
+                    follow(can_follow['pos'], manipulate_config)
+                    f.write(f'      | do follow\n')
+            if score >= global_config['beauty']['greet']:
+                like(manipulate_config)
+                f.write(f'      | do like\n')
         else:
-            # print(f"id：{name}")
-            if not is_ad:
-                f.write(f'      | page content: {is_ad}\n')
-                if score >= global_config['beauty']['excellent']:
-                    if can_follow:
-                        follow(can_follow['pos'], manipulate_config)
-                        f.write(f'      | do follow\n')
-                if score >= global_config['beauty']['greet']:
-                    like(manipulate_config)
-                    f.write(f'      | do like\n')
-            else:
-                f.write(f'      | is ad, so do not like and follow\n')
-                face_arg = None
-            if score > global_config['beauty']['good']:
-                share(manipulate_config)
-                f.write(f'      - do share\n\n')
+            f.write(f'      | is ad, so do not like and follow\n')
+            face_arg = None
+        if score > global_config['beauty']['good']:
+            share(manipulate_config)
+            f.write(f'      - do share\n\n')
         f.close()
     remove_cropped_image(f'{path}/face-{index}.jpg')
     face_arg = {'score': 0} if face_arg is None else face_arg
@@ -88,7 +93,7 @@ def fuck_ad(idx, path):
     print('ad fucker recognize: ', text)
     remove_cropped_image(f'{path}/face-{idx}-crop_ad_scan.jpg')
     ads = ['购物', '广告', '福利', '商品', '企业', '公司', '基金', '理财', '银行', '星巴克', '迪丽热巴', '期货', '电竞', '热卖',
-           '店铺', '口腔', '创业', '成人', '考研', '专升本', '律师']
+           '店铺', '口腔', '创业', '成人', '考研', '专升本', '律师', '抖音服务中心']
     for text_spices in text:
         for ad in ads:
             if ad in text_spices:
@@ -120,29 +125,51 @@ def next_video(config: dict, score):
         # 使用指数函数，使得结果在0.1-3之间，且x越大，结果变化越快
         result = 0.1 + (3 - 0.1) * math.exp(x) / (1 + math.exp(x))
         time.sleep(result)
-    os.system(f'adb shell input swipe {config["swipe"]["next"]["from"]["x"]} {config["swipe"]["next"]["from"]["y"]} '
-              f'{config["swipe"]["next"]["to"]["x"]} {config["swipe"]["next"]["to"]["y"]} '
-              f'{config["swipe"]["next"]["time"]}')
+    os.system(f'adb shell input swipe {config["swipe"]["next"]["from"]["x"] + random.choice([-1, -2, -3, 0, 1, 2, 3])} '
+              f'{config["swipe"]["next"]["from"]["y"] + random.choice([-1, -6, -13, 0, 1, 2, 13])} '
+              f'{config["swipe"]["next"]["to"]["x"] + random.choice([-1, -2, -3, 0, 1, 2, 3])} '
+              f'{config["swipe"]["next"]["to"]["y"] + random.choice([-3, -6, -9, 0, 3, 9, 13])} '
+              f'{config["swipe"]["next"]["time"] + random.choice([-10, -12, -13, 0, 10, 20, 23])}')
     time.sleep(0.6)
     print("下一个")
 
 
 def follow(pos: str, config: dict):
-    os.system(f'adb shell input tap {config["click"]["follow"][pos]["x"]} {config["click"]["follow"][pos]["y"]}')
+    if not config['click']['follow']['enable']:
+        print('follow function is disabled')
+        return
+    os.system(f'adb shell input tap {config["click"]["follow"][pos]["x"] + random.choice([-1, -2, -3, 0, 1, 2, 3])} '
+              f'{config["click"]["follow"][pos]["y"] + random.choice([-1, -2, -3, 0, 1, 2, 3])}')
     time.sleep(0.3)
     print('惊为天人，关注！')
 
 
 def like(config: dict):
+    if not config['click']['like']['enable']:
+        print('like function is disabled')
+        return
     # 800 1269
-    os.system(f'adb shell input tap {config["click"]["like"]["x"]} {config["click"]["like"]["y"]}')
-    time.sleep(0.013)
-    os.system(f'adb shell input tap {config["click"]["like"]["x"]} {config["click"]["like"]["y"]}')
-    time.sleep(1.3)
+    command = f'adb shell input tap {config["click"]["like"]["x"] + random.choice([-10, -12, -13, 0, 10, 20, 23])} ' \
+              f'{config["click"]["like"]["y"] + random.choice([-10, -12, -13, 0, 10, 20, 23])}'
+
+    def single_tap_blank_area():
+        os.system(command)
+
+    def float_range(start, stop, step):
+        while start < stop:
+            yield start
+            start += step
+
+    single_tap_blank_area()
+    time.sleep(0.16 + random.choice(list(float_range(-0.09, 0.03, 0.01))))
+    single_tap_blank_area()
     print('不赖，点个小心心')
 
 
 def share(config):
+    if not config['click']['share']['enable']:
+        print('share function is disabled')
+        return
     os.system(f'adb shell input tap {config["click"]["share"]["btn"]["x"]} {config["click"]["share"]["btn"]["y"]}')
     time.sleep(0.6)
     os.system(f'adb shell input tap {config["click"]["share"]["friend"]["x"]} '

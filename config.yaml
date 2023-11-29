@@ -1,6 +1,6 @@
 application:
-  token: 'app id'
-  secret: 'app secret'
+  token: 'your app key'
+  secret: 'your secret key'
 
 settings:
   global_config:
@@ -12,7 +12,7 @@ settings:
     beauty:
       good: 30
       greet: 39
-      excellent: 50
+      excellent: 60
       amazing: 60
     cut:
       from:
@@ -35,9 +35,11 @@ settings:
 device_manipulate:
   click:
     like:
+      enable: yes
       x: 800
       y: 1269
     follow:
+      enable: yes
       high:
         x: 988
         y: 1193
@@ -45,11 +47,12 @@ device_manipulate:
         x: 988
         y: 1073
     share:
+      enable: no
       btn:
         x: 993
         y: 1860
       friend:
-        x: 316
+        x: 336
         y: 1806
       ensure:
         x: 689
